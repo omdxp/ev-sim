@@ -4,12 +4,14 @@ import {
   ARRIVAL_PROBABILITIES,
   CHARGER_POWER,
   CHARGING_DEMANDS,
+  DAYS_PER_YEAR,
   HOURS_PER_DAY,
   KWH_PER_100KM,
   NUM_CHARGERS,
   TICKS_PER_HOUR,
   TOTAL_TICKS,
 } from "@/data";
+import { adjustForDST, SeededRandom } from "@/utils";
 
 /**
  * Simulates a network of EV charging points over a one-year period
@@ -18,8 +20,16 @@ export class Simulator {
   private chargePoints: ChargePoint[];
   private totalEnergyConsumed: number = 0;
   private maxPowerDemand: number = 0;
+  private readonly random: SeededRandom | null;
+  private hourlyPowerSum: number[] = new Array(24).fill(0);
+  private hourlyEventCount: number[] = new Array(24).fill(0);
+  private dailyEventCount: number[] = new Array(365).fill(0);
+  private monthlyEventCount: number[] = new Array(12).fill(0);
 
   constructor(private readonly config: SimulationConfig) {
+    this.random = config.randomSeed
+      ? new SeededRandom(config.randomSeed)
+      : null;
     this.chargePoints = Array(config.numChargers)
       .fill(null)
       .map(() => new ChargePoint());
@@ -38,16 +48,22 @@ export class Simulator {
    * @param tick Current simulation tick
    */
   private simulateTick(tick: number): void {
+    const adjustedTick = this.config.useDST
+      ? adjustForDST(tick, TICKS_PER_HOUR)
+      : tick;
+
     const hour = Math.floor(
-      (tick % (HOURS_PER_DAY * TICKS_PER_HOUR)) / TICKS_PER_HOUR
+      (adjustedTick % (HOURS_PER_DAY * TICKS_PER_HOUR)) / TICKS_PER_HOUR
     );
+    const day = Math.floor(adjustedTick / (HOURS_PER_DAY * TICKS_PER_HOUR));
+    const month = Math.floor(day / 30); // Approximate month calculation
 
     // Calculate base arrival probability for this 15 minute interval
     const baseArrivalProp = ARRIVAL_PROBABILITIES[hour].probability;
 
     // Calculate number of potential arrivals during this tick
     const availableChargers = this.chargePoints.filter((cp) =>
-      cp.isAvailable(tick)
+      cp.isAvailable(adjustedTick)
     ).length;
     if (availableChargers === 0) return;
 
@@ -58,25 +74,33 @@ export class Simulator {
     // Handle determined arrivals
     for (let i = 0; i < numArrivals; i++) {
       const availableChargePoint = this.chargePoints.find((cp) =>
-        cp.isAvailable(tick)
+        cp.isAvailable(adjustedTick)
       );
       if (availableChargePoint) {
-        this.handleNewArrival(tick, availableChargePoint);
+        this.handleNewArrival(adjustedTick, availableChargePoint);
       }
     }
 
     // Handle potential extra arrival
     if (this.getRandom() < extraArrivalProb) {
       const availableChargePoint = this.chargePoints.find((cp) =>
-        cp.isAvailable(tick)
+        cp.isAvailable(adjustedTick)
       );
       if (availableChargePoint) {
-        this.handleNewArrival(tick, availableChargePoint);
+        this.handleNewArrival(adjustedTick, availableChargePoint);
       }
     }
 
     // Track power demand
-    const currentPowerDemand = this.calculateTotalPowerDemand(tick);
+    const currentPowerDemand = this.calculateTotalPowerDemand(adjustedTick);
+    this.hourlyPowerSum[hour] += currentPowerDemand;
+
+    // Track events if any arrivals occured
+    if (numArrivals > 0 || this.getRandom() < extraArrivalProb) {
+      this.hourlyEventCount[hour]++;
+      this.dailyEventCount[day]++;
+      this.monthlyEventCount[month]++;
+    }
 
     // Update power demand statistics
     this.maxPowerDemand = Math.max(this.maxPowerDemand, currentPowerDemand);
@@ -146,6 +170,10 @@ export class Simulator {
       theoreticalMaxPower,
       actualMaxPower: this.maxPowerDemand,
       concurrencyFactor: this.maxPowerDemand / theoreticalMaxPower,
+      hourlyPowerDemand: this.hourlyPowerSum.map((sum) => sum / DAYS_PER_YEAR),
+      hourlyChargingEvents: this.dailyEventCount,
+      dailyChargingEvents: this.dailyEventCount,
+      monthlyChargingEvents: this.monthlyEventCount,
     };
   }
 
@@ -153,6 +181,6 @@ export class Simulator {
    * Returns a random number between 0 and 1
    */
   private getRandom(): number {
-    return Math.random();
+    return this.random ? this.random.random() : Math.random();
   }
 }

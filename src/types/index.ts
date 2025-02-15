@@ -28,6 +28,8 @@ export type ChargingSession = {
  */
 export type SimulationConfig = {
   numChargers: number;
+  useDST?: boolean;
+  randomSeed?: number;
 };
 
 /**
@@ -39,6 +41,10 @@ export type SimulationResults = {
   theoreticalMaxPower: number;
   actualMaxPower: number;
   concurrencyFactor: number;
+  hourlyPowerDemand: number[]; // 24 values, one per hour
+  hourlyChargingEvents: number[]; // 24 values, one per hour
+  dailyChargingEvents: number[]; // 365 values, one per day
+  monthlyChargingEvents: number[]; // 12 values, one per month
 };
 
 /**
