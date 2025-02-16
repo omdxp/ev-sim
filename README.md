@@ -1,36 +1,98 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# EV Charging Point Simulator
 
-## Getting Started
+This project consists of two parts:
+1. A simulation script for EV charging patterns
+2. An interactive web application to visualize and configure the simulation
 
-First, run the development server:
+## Problem Overview
+
+The simulator models EV charging behavior based on:
+- Hourly arrival probabilities from real-world data
+- Different charging demands (range requirements)
+- Variable number of charging points and power levels
+- Concurrency patterns throughout the day
+
+## Script Solution
+
+The script calculates:
+- Maximum power demand
+- Energy consumption
+- Concurrency factors
+- Charging event distributions
+
+### Running the Script
 
 ```bash
-npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
+# Install dependencies
+npm install
+
+# Run the simulation script
+npm run simulate
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+## Web Application
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+Interactive visualization with features:
+- Real-time simulation configuration
+- Multiple charger type support (11kW, 22kW, 50kW)
+- Dynamic charts and statistics
+- Concurrency analysis per charger type
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+### Running the Web App
 
-## Learn More
+```bash
+# Install dependencies
+npm install
 
-To learn more about Next.js, take a look at the following resources:
+# Start development server
+npm run dev
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+# Build for production
+npm run build
+```
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
+Visit `http://localhost:3000` to access the application.
 
-## Deploy on Vercel
+## Features
 
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
+- 📊 Interactive charts
+- 🔄 Real-time updates
+- 📱 Responsive design
+- 🎛️ Multiple charger configurations
+- 📈 Detailed statistics
+- 🌙 Dark mode optimized
 
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+## Tech Stack
+
+- TypeScript
+- Next.js
+- TailwindCSS
+- Recharts
+- Node.js
+
+## Configuration
+
+The simulation can be configured with:
+- Number and type of charging points
+- Arrival rate multiplier (20% - 200%)
+- Consumption rate (10 - 30 kWh/100km)
+- Different charging powers (3kW - 22kW)
+
+## Results Analysis
+
+The application provides:
+- Total energy consumption
+- Maximum power demand
+- Concurrency factors
+- Hourly, daily, and monthly patterns
+- Per-charger type statistics
+
+## Local Development
+
+```bash
+# Install dependencies
+npm install
+
+# Start development
+npm run dev
+```
