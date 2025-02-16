@@ -59,7 +59,9 @@ export class Simulator {
     const month = Math.floor(day / 30); // Approximate month calculation
 
     // Calculate base arrival probability for this 15 minute interval
-    const baseArrivalProp = ARRIVAL_PROBABILITIES[hour].probability;
+    const baseArrivalProp =
+      ARRIVAL_PROBABILITIES[hour].probability *
+      (this.config.arrivalMultiplier || 1);
 
     // Calculate number of potential arrivals during this tick
     const availableChargers = this.chargePoints.filter((cp) =>
@@ -116,8 +118,8 @@ export class Simulator {
     const chargingDemand = this.selectRandomChargingDemand();
     if (chargingDemand.kilometers === 0) return;
 
-    const consumtionRate = KWH_PER_100KM;
-    const chargingPower = CHARGER_POWER;
+    const consumtionRate = this.config.consumptionRate || KWH_PER_100KM;
+    const chargingPower = this.config.chargingPower || CHARGER_POWER;
 
     const energyNeeded = (chargingDemand.kilometers / 100) * consumtionRate;
     const durationTicks = Math.ceil(
@@ -171,7 +173,7 @@ export class Simulator {
       actualMaxPower: this.maxPowerDemand,
       concurrencyFactor: this.maxPowerDemand / theoreticalMaxPower,
       hourlyPowerDemand: this.hourlyPowerSum.map((sum) => sum / DAYS_PER_YEAR),
-      hourlyChargingEvents: this.dailyEventCount,
+      hourlyChargingEvents: this.hourlyEventCount,
       dailyChargingEvents: this.dailyEventCount,
       monthlyChargingEvents: this.monthlyEventCount,
     };

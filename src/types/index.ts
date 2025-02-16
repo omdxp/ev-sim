@@ -30,6 +30,9 @@ export type SimulationConfig = {
   numChargers: number;
   useDST?: boolean;
   randomSeed?: number;
+  arrivalMultiplier?: number;
+  consumptionRate?: number;
+  chargingPower?: number;
 };
 
 /**
