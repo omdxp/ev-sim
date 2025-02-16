@@ -9,6 +9,9 @@ const defaultConfig: SimulationConfig = {
   numChargers: 20,
   useDST: false,
   randomSeed: undefined,
+  arrivalMultiplier: 100,
+  consumptionRate: 18,
+  chargingPower: 11,
 };
 
 export default function Home() {
@@ -21,6 +24,7 @@ export default function Home() {
     try {
       const simulator = new Simulator({
         ...config,
+        arrivalMultiplier: config.arrivalMultiplier! / 100,
       });
       simulator.run();
       setResults(simulator.getResults());

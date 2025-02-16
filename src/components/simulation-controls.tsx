@@ -65,7 +65,7 @@ export default function SimulationControls({
             step="10"
             value={config.arrivalMultiplier}
             onChange={(e) =>
-              handleSliderChange(+e.target.value / 100, "arrivalMultiplier")
+              handleSliderChange(+e.target.value, "arrivalMultiplier")
             }
             className="slider-input"
           />
