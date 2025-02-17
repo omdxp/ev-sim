@@ -1,4 +1,3 @@
-import { CHARGER_POWER } from "@/data";
 import { ChargingSession } from "@/types";
 
 /**
@@ -30,11 +29,11 @@ export class ChargePoint {
   /**
    * Gets the current power demand at a specific tick
    * @param currentTick Current simulation tick
-   * @returns Power demand in kW (either 0 or CHARGER_POWER)
+   * @returns Power demand in kW (either 0 or specified power demand)
    */
   public getPowerDemand(currentTick: number): number {
     if (!this.currentSession || !this.isCharging(currentTick)) return 0;
-    return CHARGER_POWER;
+    return this.currentSession.powerDemand;
   }
 
   /**
