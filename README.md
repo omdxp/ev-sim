@@ -12,6 +12,28 @@ The simulator models EV charging behavior based on:
 - Variable number of charging points and power levels
 - Concurrency patterns throughout the day
 
+## Development Modes
+
+This project supports two development modes:
+
+### Full Simulation Mode (main branch)
+The complete simulation with all calculations and real-world modeling.
+
+```bash
+git checkout main
+npm install
+npm run dev
+```
+
+### Quick Preview Mode (mockups branch)
+Uses pre-calculated mockup data for faster development and UI testing:
+
+```bash
+git checkout mockups
+npm install
+npm run dev
+```
+
 ## Script Solution
 
 The script calculates:
@@ -95,4 +117,3 @@ npm install
 
 # Start development
 npm run dev
-```
