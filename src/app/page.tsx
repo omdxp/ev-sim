@@ -1,7 +1,7 @@
 "use client";
 
 import { AnimatedNumber, Charts, SimulationControls } from "@/components";
-import { Simulator } from "@/lib/simulator";
+import { getMockResults } from "@/lib/mockData";
 import { SimulationConfig, SimulationResults } from "@/types";
 import { useCallback, useState } from "react";
 
@@ -21,18 +21,16 @@ export default function Home() {
 
   const handleSimulate = useCallback(() => {
     setIsSimulating(true);
-    try {
-      const simulator = new Simulator({
-        ...config,
-        arrivalMultiplier: config.arrivalMultiplier! / 100,
-      });
-      simulator.run();
-      setResults(simulator.getResults());
-    } catch (err) {
-      console.error("Simulation error:", err);
-    } finally {
-      setIsSimulating(false);
-    }
+    // Simulate a delay
+    setTimeout(() => {
+      try {
+        setResults(getMockResults(config));
+      } catch (err) {
+        console.error("Simulation error:", err);
+      } finally {
+        setIsSimulating(false);
+      }
+    }, 1000);
   }, [config]);
 
   return (
